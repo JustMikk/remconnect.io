@@ -23,6 +23,15 @@ const ADMIN_NAV: NavGroup[] = [
     { id: 'agents',  label: 'Agent directory', icon: 'users' },
     { id: 'clients', label: 'Clients',         icon: 'briefcase' },
   ]},
+  { group: 'Network', items: [
+    { id: 'net-dashboard', label: 'Overview',   icon: 'globe'     },
+    { id: 'net-agents',    label: 'Agents',     icon: 'users'     },
+    { id: 'net-incidents', label: 'Incidents',  icon: 'activity'  },
+    { id: 'net-alerts',    label: 'Alerts',     icon: 'bell'      },
+    { id: 'net-isp',       label: 'ISP',        icon: 'share'     },
+    { id: 'net-shifts',    label: 'Shifts',     icon: 'clock'     },
+    { id: 'net-reports',   label: 'Reports',    icon: 'bar-chart' },
+  ]},
   { group: 'Platform', items: [
     { id: 'integrations', label: 'Integrations', icon: 'share' },
     { id: 'settings',     label: 'Settings',     icon: 'settings' },
@@ -30,15 +39,22 @@ const ADMIN_NAV: NavGroup[] = [
 ]
 
 const ROUTE_MAP: Record<string, string> = {
-  dashboard:    '/admin',
-  audit:        '/admin/audit',
-  admins:       '/admin/admins',
-  roles:        '/admin/roles',
-  invite:       '/admin/invite',
-  agents:       '/admin/agents',
-  clients:      '/admin/clients',
-  integrations: '/admin/integrations',
-  settings:     '/admin/settings',
+  dashboard:     '/admin',
+  audit:         '/admin/audit',
+  admins:        '/admin/admins',
+  roles:         '/admin/roles',
+  invite:        '/admin/invite',
+  agents:        '/admin/agents',
+  clients:       '/admin/clients',
+  'net-dashboard': '/admin/network/dashboard',
+  'net-agents':    '/admin/network/agents',
+  'net-incidents': '/admin/network/incidents',
+  'net-alerts':    '/admin/network/alerts',
+  'net-isp':       '/admin/network/isp',
+  'net-shifts':    '/admin/network/shifts',
+  'net-reports':   '/admin/network/reports',
+  integrations:  '/admin/integrations',
+  settings:      '/admin/settings',
 }
 
 export function AdminSidebar() {
@@ -47,6 +63,7 @@ export function AdminSidebar() {
   const isActive = (id: string) => {
     const route = ROUTE_MAP[id]
     if (id === 'dashboard') return pathname === '/admin'
+    if (id === 'net-dashboard') return pathname === '/admin/network/dashboard' || pathname === '/admin/network'
     return pathname.startsWith(route)
   }
 

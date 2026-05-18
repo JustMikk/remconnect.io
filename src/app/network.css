@@ -1,0 +1,199 @@
+/* ─── Network Monitor Design Tokens ─────────────────────────────────────────
+   Scoped to .net-scope so these don't collide with remconnect-io's token set.
+   All remconnect-online CSS vars are prefixed with --net-.
+──────────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+.net-scope {
+  --net-brand-dark:    #003366;
+  --net-brand-mid:     #005A9E;
+  --net-brand-accent:  #0099CC;
+  --net-brand-600:     #0099CC;
+  --net-brand-400:     #33ADD6;
+  --net-brand-200:     #B3E1EE;
+  --net-brand-100:     #D9F0F7;
+  --net-brand-50:      #F0F9FC;
+
+  --net-healthy:       #138A4A;
+  --net-healthy-bg:    #E1F5EA;
+  --net-warning:       #D08509;
+  --net-warning-bg:    #FDF1D8;
+  --net-critical:      #C0322E;
+  --net-critical-bg:   #FBE3E2;
+
+  --net-bg:            #FFFFFF;
+  --net-surface:       #FFFFFF;
+  --net-surface-2:     #F4FAFC;
+  --net-surface-3:     #E8F2F7;
+  --net-border:        #D9E6EE;
+  --net-border-strong: #B3CCDB;
+  --net-text:          #003366;
+  --net-text-muted:    #4A6B82;
+  --net-text-dim:      #7A93A6;
+  --net-shadow-sm:     0 1px 2px rgba(0,51,102,.05);
+  --net-shadow:        0 1px 3px rgba(0,51,102,.07), 0 1px 2px rgba(0,51,102,.04);
+  --net-shadow-md:     0 4px 6px rgba(0,51,102,.07), 0 2px 4px rgba(0,51,102,.05);
+  --net-radius:        10px;
+  --net-radius-sm:     6px;
+  --net-font-sans:     'Manrope', system-ui, sans-serif;
+  --net-font-mono:     'JetBrains Mono', monospace;
+
+  /* Map the remconnect-online generic vars locally so its components work unchanged */
+  --brand-dark:    var(--net-brand-dark);
+  --brand-mid:     var(--net-brand-mid);
+  --brand-accent:  var(--net-brand-accent);
+  --brand-700:     var(--net-brand-dark);
+  --brand-600:     var(--net-brand-600);
+  --brand-500:     var(--net-brand-accent);
+  --brand-400:     var(--net-brand-400);
+  --brand-300:     #66C2E0;
+  --brand-200:     var(--net-brand-200);
+  --brand-100:     var(--net-brand-100);
+  --brand-50:      var(--net-brand-50);
+
+  --healthy:       var(--net-healthy);
+  --healthy-bg:    var(--net-healthy-bg);
+  --warning:       var(--net-warning);
+  --warning-bg:    var(--net-warning-bg);
+  --critical:      var(--net-critical);
+  --critical-bg:   var(--net-critical-bg);
+
+  --bg:            var(--net-bg);
+  --surface:       var(--net-surface);
+  --surface-2:     var(--net-surface-2);
+  --surface-3:     var(--net-surface-3);
+  --border:        var(--net-border);
+  --border-strong: var(--net-border-strong);
+  --text:          var(--net-text);
+  --text-muted:    var(--net-text-muted);
+  --text-dim:      var(--net-text-dim);
+  --shadow-sm:     var(--net-shadow-sm);
+  --shadow:        var(--net-shadow);
+  --shadow-md:     var(--net-shadow-md);
+  --radius:        var(--net-radius);
+  --radius-sm:     var(--net-radius-sm);
+  --font-sans:     var(--net-font-sans);
+  --font-mono:     var(--net-font-mono);
+
+  font-family: var(--net-font-sans);
+  color: var(--net-text);
+  background: var(--net-bg);
+}
+
+/* ─── Typography helpers ─────────────────────────────────────────────────── */
+.net-scope .net-mono  { font-family: var(--net-font-mono); }
+.net-scope .net-tnum  { font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums; }
+.net-scope .net-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--net-text-dim); }
+.net-scope .mono      { font-family: var(--net-font-mono); }
+.net-scope .tnum      { font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums; }
+.net-scope .label     { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--net-text-dim); }
+
+/* ─── Card ───────────────────────────────────────────────────────────────── */
+.net-scope .card {
+  background: var(--net-surface);
+  border: 1px solid var(--net-border);
+  border-radius: var(--net-radius);
+  box-shadow: var(--net-shadow-sm);
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.net-scope .btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--net-radius-sm);
+  font-family: var(--net-font-sans); font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none;
+  transition: background .15s, box-shadow .15s, opacity .15s;
+  white-space: nowrap; line-height: 1;
+}
+.net-scope .btn:disabled { opacity: .5; cursor: not-allowed; }
+.net-scope .btn-primary   { background: var(--net-brand-accent); color: #fff; }
+.net-scope .btn-primary:hover:not(:disabled)  { background: var(--net-brand-mid); }
+.net-scope .btn-secondary { background: var(--net-surface-2); color: var(--net-text); border: 1px solid var(--net-border); }
+.net-scope .btn-secondary:hover:not(:disabled){ background: var(--net-surface-3); }
+.net-scope .btn-ghost     { background: transparent; color: var(--net-text-muted); border: 1px solid transparent; }
+.net-scope .btn-ghost:hover:not(:disabled) { background: var(--net-surface-2); }
+.net-scope .btn-sm { padding: 5px 12px; font-size: 12px; }
+.net-scope .btn-lg { padding: 11px 22px; font-size: 15px; }
+
+/* ─── Inputs ─────────────────────────────────────────────────────────────── */
+.net-scope .input {
+  font-family: var(--net-font-sans); font-size: 13px; padding: 8px 12px;
+  border-radius: var(--net-radius-sm); border: 1px solid var(--net-border);
+  background: var(--net-surface); color: var(--net-text); outline: none; width: 100%;
+  transition: border-color .15s, box-shadow .15s;
+}
+.net-scope .input:focus { border-color: var(--net-brand-accent); box-shadow: 0 0 0 3px rgba(0,153,204,.12); }
+.net-scope .input::placeholder { color: var(--net-text-dim); }
+
+/* ─── Chips ──────────────────────────────────────────────────────────────── */
+.net-scope .chip         { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.net-scope .chip-healthy { background: var(--net-healthy-bg);  color: var(--net-healthy); }
+.net-scope .chip-warning { background: var(--net-warning-bg);  color: var(--net-warning); }
+.net-scope .chip-critical{ background: var(--net-critical-bg); color: var(--net-critical); }
+.net-scope .chip-blue    { background: var(--net-brand-100);   color: var(--net-brand-mid); border: 1px solid var(--net-brand-200); }
+.net-scope .chip-dim     { background: var(--net-surface-2);   color: var(--net-text-muted); border: 1px solid var(--net-border); }
+
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
+.net-scope .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.net-scope .data-table th { text-align: left; padding: 10px 14px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--net-text-dim); border-bottom: 1px solid var(--net-border); white-space: nowrap; user-select: none; }
+.net-scope .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--net-border); color: var(--net-text-muted); }
+.net-scope .data-table tr:last-child td { border-bottom: none; }
+.net-scope .data-table tbody tr:hover td { background: var(--net-surface-2); }
+.net-scope .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; min-width: 0; }
+
+/* ─── Topbar ─────────────────────────────────────────────────────────────── */
+.net-scope .topbar { border-bottom: 1px solid var(--net-border); padding: 18px 28px; background: var(--net-surface); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+
+/* ─── KPI strip ──────────────────────────────────────────────────────────── */
+.net-scope .kpi-strip { display: grid; grid-template-columns: repeat(5,1fr) 1.4fr; gap: 14px; }
+.net-scope .dash-layout  { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+.net-scope .dash-sidebar { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; }
+
+/* ─── Agent self-view ────────────────────────────────────────────────────── */
+.net-scope .self-body       { max-width: 1200px; margin: 0 auto; padding: 28px 24px 80px; }
+.net-scope .self-hero       { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: start; }
+.net-scope .self-sparklines { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* ─── Tab strip ──────────────────────────────────────────────────────────── */
+.net-scope .tab-strip { display: flex; gap: 2px; padding: 0 28px; border-bottom: 1px solid var(--net-border); background: var(--net-surface); overflow-x: auto; }
+.net-scope .tab-btn   { padding: 12px 16px; font-size: 13px; font-weight: 500; color: var(--net-text-muted); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; font-family: var(--net-font-sans); white-space: nowrap; }
+.net-scope .tab-btn:hover { color: var(--net-text); }
+.net-scope .tab-btn.active { color: var(--net-brand-accent); border-bottom-color: var(--net-brand-accent); font-weight: 600; }
+
+/* ─── Toggle ─────────────────────────────────────────────────────────────── */
+.net-scope .toggle-track { width: 36px; height: 20px; border-radius: 10px; background: var(--net-border-strong); position: relative; cursor: pointer; transition: background .2s; border: none; flex-shrink: 0; }
+.net-scope .toggle-track.on { background: var(--net-brand-accent); }
+.net-scope .toggle-thumb { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); pointer-events: none; }
+.net-scope .toggle-track.on .toggle-thumb { transform: translateX(16px); }
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes net-pulse-dot  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+@keyframes net-fade-in    { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+@keyframes net-fade-fast  { from{opacity:0} to{opacity:1} }
+@keyframes net-pop-in     { 0%{transform:scale(.7);opacity:0} 70%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+@keyframes arc-draw       { from{stroke-dashoffset:502} }
+@keyframes clock-spin     { to{transform:rotate(360deg)} }
+@keyframes pulse-dot      { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+@keyframes fade-in        { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pop-in         { 0%{transform:scale(.7);opacity:0} 70%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+@keyframes pulse-dot      { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+.net-scope .fade-in      { animation: net-fade-in  .25s ease both; }
+.net-scope .fade-in-fast { animation: net-fade-fast .15s ease both; }
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .net-scope .kpi-strip   { grid-template-columns: repeat(3, 1fr); }
+  .net-scope .dash-layout { grid-template-columns: 1fr; }
+  .net-scope .dash-sidebar{ display: none; }
+}
+@media (max-width: 900px) {
+  .net-scope .kpi-strip        { grid-template-columns: repeat(2, 1fr); }
+  .net-scope .self-sparklines  { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .net-scope .self-body { padding: 16px 16px 100px; }
+  .net-scope .self-hero { grid-template-columns: 1fr; }
+  .net-scope .self-sparklines { grid-template-columns: 1fr; }
+  .net-scope .topbar { padding: 12px 16px; }
+}

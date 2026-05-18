@@ -4,6 +4,13 @@ import { useState } from 'react'
 import { Icon } from '@/components/ui/Icon'
 import { Chip } from '@/components/ui/Chip'
 import { ScoreRing } from '@/components/ui/ScoreRing'
+import dynamic from 'next/dynamic'
+import '@/app/network.css'
+
+const AgentSpeedPanel = dynamic(
+  () => import('@/components/network/agent-self/AgentSpeedPanel').then(m => m.AgentSpeedPanel),
+  { ssr: false }
+)
 
 const ITEMS = [
   { id: 'monitor',   label: '2nd monitor',           desc: '1080p or better, for multi-tasking across tools',            icon: 'spreadsheet' },
@@ -101,6 +108,11 @@ export default function RemoteSetupPage() {
             </div>
           )
         })}
+      </div>
+
+      {/* Speed test panel */}
+      <div className="net-scope" style={{ marginBottom: 28 }}>
+        <AgentSpeedPanel/>
       </div>
 
       {/* Gallery */}
