@@ -58,6 +58,7 @@ export interface SampleAgent {
 export interface AgentProfileExtras {
   headline: string
   photo?: string
+  video?: string
   pitch: string
   location: string
   timezone: string

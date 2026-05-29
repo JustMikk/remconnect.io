@@ -13,7 +13,10 @@
       "PowerShell($outDir = \"C:\\\\Users\\\\REM-2D\\\\.claude\\\\projects\\\\c--Users-REM-2D-Desktop-remconnect-online\\\\design-extract\"; $bytes = [System.IO.File]::ReadAllBytes\\(\"$outDir\\\\design.bin\"\\); $header = [System.Text.Encoding]::ASCII.GetString\\($bytes[0..511]\\); Write-Output $header)",
       "PowerShell($outDir = \"C:\\\\Users\\\\REM-2D\\\\.claude\\\\projects\\\\c--Users-REM-2D-Desktop-remconnect-online\\\\design-extract\"; $extractDir = \"$outDir\\\\extracted\"; New-Item -ItemType Directory -Force -Path $extractDir | Out-Null; tar -xf \"$outDir\\\\design.bin\" -C $extractDir; Get-ChildItem $extractDir -Recurse | Select-Object FullName)",
       "Bash(npx tsc *)",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\REM-2D\\\\Desktop\\\\remconnect\\\\remconnect-io\\\\public\\\\temporary demo agent\\\\nahom.mp4\" \"c:\\\\Users\\\\REM-2D\\\\Desktop\\\\remconnect\\\\remconnect-io\\\\public\\\\agents\\\\nahom-dereje.mp4\")",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\REM-2D\\\\Desktop\\\\remconnect\\\\remconnect-io\\\\public\\\\temporary demo agent\\\\ermias.mp4\" \"c:\\\\Users\\\\REM-2D\\\\Desktop\\\\remconnect\\\\remconnect-io\\\\public\\\\agents\\\\ermias-lemma.mp4\")",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\REM-2D\\\\Desktop\\\\remconnect\\\\remconnect-io\\\\public\\\\temporary demo agent\\\\tensae.mp4\" \"c:\\\\Users\\\\REM-2D\\\\Desktop\\\\remconnect\\\\remconnect-io\\\\public\\\\agents\\\\tensae-wubeshet.mp4\")"
     ]
   }
 }

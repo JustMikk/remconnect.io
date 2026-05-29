@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @import "tailwindcss";
 
@@ -26,9 +26,16 @@
   --color-rc-canvas:     #e8e6db;
 
   /* Fonts */
-  --font-family-sans:  "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-family-serif: "Instrument Serif", "Times New Roman", serif;
-  --font-family-mono:  "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-family-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-serif:   "Instrument Serif", "Times New Roman", serif;
+  --font-family-display: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono:    "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  /* Tailwind v4 font utility aliases */
+  --font-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif:   "Instrument Serif", "Times New Roman", serif;
+  --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, Menlo, monospace;
 
   /* Border radius */
   --radius-sm: 6px;
@@ -41,7 +48,7 @@
   --shadow-lg: 0 16px 40px rgba(11,18,32,0.12);
 }
 
-/* CSS custom properties for use in inline styles */
+/* CSS custom properties for use in inline styles and arbitrary Tailwind values */
 :root {
   --rc-ink:       #0b1220;
   --rc-ink-2:     #121a2b;
@@ -66,12 +73,16 @@
 
 * { box-sizing: border-box; }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   font-family: var(--font-family-sans);
-  color: var(--rc-ink);
-  background: #e8e6db;
+  color: var(--rc-paper);
+  background: #0b1220;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-size: 14px;
@@ -157,4 +168,84 @@ input:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--rc-blue);
   outline-offset: 2px;
+}
+
+/* ─── Landing page animations ──────────────────────────────── */
+
+@keyframes l-up {
+  from { opacity: 0; transform: translateY(48px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes l-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes l-scale {
+  from { opacity: 0; transform: scale(0.93); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes l-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes l-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes l-scroll-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.9; }
+  50%       { transform: translateY(8px); opacity: 0.3; }
+}
+@keyframes l-faq-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes l-spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes l-underline {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+
+.l-in       { animation: l-up    0.75s cubic-bezier(0.16,1,0.3,1) both; }
+.l-in-fade  { animation: l-fade  0.65s ease both; }
+.l-in-scale { animation: l-scale 0.75s cubic-bezier(0.16,1,0.3,1) both; }
+.l-float    { animation: l-float 5s ease-in-out infinite; }
+.l-scroll-cue { animation: l-scroll-bounce 2s ease-in-out infinite; }
+.l-marquee  { animation: l-marquee 32s linear infinite; }
+.l-marquee:hover { animation-play-state: paused; }
+.l-faq-in   { animation: l-faq-in 0.22s ease both; }
+
+.l-d1 { animation-delay:  80ms; }
+.l-d2 { animation-delay: 160ms; }
+.l-d3 { animation-delay: 240ms; }
+.l-d4 { animation-delay: 320ms; }
+.l-d5 { animation-delay: 400ms; }
+.l-d6 { animation-delay: 480ms; }
+.l-d7 { animation-delay: 560ms; }
+.l-d8 { animation-delay: 640ms; }
+
+/* Responsive overrides */
+@media (max-width: 1024px) {
+  .l-hero-grid     { grid-template-columns: 1fr !important; }
+  .l-hero-videos   { display: none !important; }
+  .l-dual-grid     { grid-template-columns: 1fr !important; }
+  .l-how-grid      { grid-template-columns: 1fr !important; }
+  .l-agent-grid    { grid-template-columns: 1fr 1fr !important; }
+  .l-jobs-grid     { grid-template-columns: 1fr !important; }
+  .l-jobs-feature  { grid-row: auto !important; }
+  .l-testi-grid    { grid-template-columns: 1fr !important; }
+  .l-footer-grid   { grid-template-columns: 1fr 1fr !important; }
+  .l-cta-grid      { grid-template-columns: 1fr !important; }
+  .l-faq-grid      { grid-template-columns: 1fr !important; }
+  .l-stats-grid    { grid-template-columns: 1fr 1fr !important; }
+  .l-section-pad   { padding: 72px 24px !important; }
+}
+@media (max-width: 640px) {
+  .l-agent-grid  { grid-template-columns: 1fr !important; }
+  .l-footer-grid { grid-template-columns: 1fr !important; }
+  .l-stats-grid  { grid-template-columns: 1fr 1fr !important; }
+  .l-hero-pad    { padding: 96px 24px 72px !important; }
 }

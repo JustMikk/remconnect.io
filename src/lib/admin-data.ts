@@ -210,6 +210,7 @@ export const AGENT_EXTRAS: Record<string, AgentProfileExtras> = {
   },
   'AD-3002': {
     photo: '/agents/nahom-dereje.jpg',
+    video: '/agents/nahom-dereje.mp4',
     headline: 'Business Development Representative · B2B & partnerships',
     pitch: 'Results-driven BDR with experience in SaaS business development and executive support. Comfortable operating independently, building client relationships from cold outreach through close, and supporting senior leadership on strategic initiatives.',
     location: 'Addis Ababa, ET', timezone: 'EAT (UTC+3)', hours: 'Overlaps US-East 6h',
@@ -230,6 +231,7 @@ export const AGENT_EXTRAS: Record<string, AgentProfileExtras> = {
   },
   'AD-3003': {
     photo: '/agents/ermias-lemma.png',
+    video: '/agents/ermias-lemma.mp4',
     headline: 'SDR · A2P SMS Specialist · B2B Outbound (US Market)',
     pitch: 'Technical SDR with a rare combination of high-volume outbound sales and A2P SMS operations expertise. Comfortable with US business-hours shifts, experienced with HubSpot and Apollo, and fluent in the compliance and routing side of SMS messaging platforms.',
     location: 'Addis Ababa, ET', timezone: 'EAT (UTC+3)', hours: 'US hours (5:00 PM – 5:00 AM EAT)',
@@ -249,6 +251,7 @@ export const AGENT_EXTRAS: Record<string, AgentProfileExtras> = {
   },
   'AD-3004': {
     photo: '/agents/tensae-wubeshet.jpg',
+    video: '/agents/tensae-wubeshet.mp4',
     headline: 'Sales Development Representative',
     pitch: 'Motivated SDR ready to contribute to a high-performing remote team. Strong communication skills and a customer-first mindset.',
     location: 'Addis Ababa, ET', timezone: 'EAT (UTC+3)', hours: 'Overlaps US-East 6h',
