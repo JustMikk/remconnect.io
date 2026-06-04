@@ -4,6 +4,11 @@ export default function LandingFooter() {
       <div className="lp-foot-inner">
         <div className="lp-foot-top">
           <div>
+            <img
+              src="/assets/remconnect-logo.png"
+              alt="RemConnect"
+              style={{ height: 52, width: 'auto', display: 'block', marginBottom: 24, filter: 'brightness(0) invert(1)' }}
+            />
             <h3>Ready to build your remote career?</h3>
             <p>
               RemConnect trains, certifies and places customer-support agents on teams at US and international

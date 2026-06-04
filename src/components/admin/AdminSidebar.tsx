@@ -89,11 +89,11 @@ export function AdminSidebar() {
         marginBottom: 10,
       }}>
         <Image
-          src="/assets/remconnect-logo.png"
+          src="/assets/remconnect-mark.png"
           alt="RemConnect"
-          width={28}
-          height={28}
-          style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)', width: 28, height: 28 }}
+          width={34}
+          height={34}
+          style={{ objectFit: 'cover', width: 34, height: 34, borderRadius: 9 }}
           priority
         />
         <div>

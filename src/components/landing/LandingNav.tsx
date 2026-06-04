@@ -4,10 +4,12 @@ export default function LandingNav() {
       {/* ============ NAV ============ */}
       <div className="lp-nav-wrap">
         <nav className="lp-nav" id="lpNav">
-          <a className="lp-logo" href="#">
-            <span className="lp-logo-mark">R</span>
-            <b>RemConnect</b>
-            <span className="dot">.</span>
+          <a className="lp-logo" href="#" aria-label="RemConnect home">
+            <img
+              src="/assets/remconnect-logo.png"
+              alt="RemConnect"
+              style={{ height: 42, width: 'auto', display: 'block' }}
+            />
           </a>
 
           <div className="lp-nav-links">
@@ -110,10 +112,12 @@ export default function LandingNav() {
       {/* ============ MOBILE MENU ============ */}
       <div className="lp-mobile" id="lpMobile">
         <div className="lp-mobile-top">
-          <span className="lp-logo" style={{ color: '#fff' }}>
-            <span className="lp-logo-mark">R</span>
-            <b>RemConnect</b>
-            <span className="dot">.</span>
+          <span className="lp-logo">
+            <img
+              src="/assets/remconnect-logo.png"
+              alt="RemConnect"
+              style={{ height: 42, width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }}
+            />
           </span>
           <button className="lp-mobile-close" id="lpMobileClose" aria-label="Close">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
