@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function ApplicationWindow() {
   return (
     <section className="lp-section" id="jobs" data-screen-label="Application window">
@@ -17,14 +19,14 @@ export default function ApplicationWindow() {
             Cohort 14 is accepting applications now.
           </p>
           <div className="lp-appwin-cta">
-            <button className="lp-btn lp-btn-on-blue">
+            <Link className="lp-btn lp-btn-on-blue" href="/apply">
               Apply before it closes
               <span className="pip">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
                   <path d="M5 12h14M13 5l7 7-7 7" />
                 </svg>
               </span>
-            </button>
+            </Link>
             <a className="lp-textlink on-dark" data-scroll="how">
               How a cohort works
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">

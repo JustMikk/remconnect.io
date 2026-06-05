@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function LandingFooter() {
   return (
     <footer className="lp-foot" data-screen-label="Footer">
@@ -22,8 +24,8 @@ export default function LandingFooter() {
           <div className="lp-foot-cols">
             <div>
               <h4>For agents</h4>
-              <a>Apply for free</a>
-              <a href="/home">Agent sign in</a>
+              <Link href="/apply">Apply for free</Link>
+              <Link href="/apply?screen=login">Agent sign in</Link>
               <a data-scroll="how">Training tracks</a>
               <a data-scroll="stories">Agent stories</a>
             </div>

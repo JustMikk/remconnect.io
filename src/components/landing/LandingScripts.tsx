@@ -35,7 +35,9 @@ export default function LandingScripts() {
     const mobileClose = document.getElementById('lpMobileClose')
     burger?.addEventListener('click', openMobile)
     mobileClose?.addEventListener('click', closeMobile)
-    mobile?.querySelectorAll('a[data-scroll]').forEach((a) => a.addEventListener('click', closeMobile))
+    // Close (and restore body scroll) on any mobile nav tap — including the
+    // /apply Link, so the overflow:hidden lock never carries into the next route.
+    mobile?.querySelectorAll('nav a').forEach((a) => a.addEventListener('click', closeMobile))
     cleanups.push(() => {
       burger?.removeEventListener('click', openMobile)
       mobileClose?.removeEventListener('click', closeMobile)

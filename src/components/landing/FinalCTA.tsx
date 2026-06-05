@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function FinalCTA() {
   return (
     <section className="lp-final" id="contact" data-screen-label="Final CTA">
@@ -19,20 +21,20 @@ export default function FinalCTA() {
                 Free to apply, free to train, <em>paid to grow.</em>
               </h3>
               <div className="lp-stack-cta">
-                <button className="lp-btn lp-btn-blue">
+                <Link className="lp-btn lp-btn-blue" href="/apply">
                   Apply for free
                   <span className="pip">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
                       <path d="M5 12h14M13 5l7 7-7 7" />
                     </svg>
                   </span>
-                </button>
-                <a className="lp-textlink on-dark" href="/home">
+                </Link>
+                <Link className="lp-textlink on-dark" href="/apply?screen=login">
                   Already an agent? Sign in
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                     <path d="M5 12h14M13 5l7 7-7 7" />
                   </svg>
-                </a>
+                </Link>
               </div>
               <div className="lp-stack-note">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

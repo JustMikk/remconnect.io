@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function LandingNav() {
   return (
     <>
@@ -92,14 +94,14 @@ export default function LandingNav() {
                 <path d="M7 17 17 7M9 7h8v8" />
               </svg>
             </a>
-            <button className="lp-nav-apply">
+            <Link className="lp-nav-apply" href="/apply">
               Apply
               <span className="pip">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                   <path d="M5 12h14M13 5l7 7-7 7" />
                 </svg>
               </span>
-            </button>
+            </Link>
             <button className="lp-burger" id="lpBurger" aria-label="Menu">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M3 6h18M3 12h18M3 18h18" />
@@ -130,7 +132,7 @@ export default function LandingNav() {
           <a data-scroll="how">Method</a>
           <a data-scroll="stories">Stories</a>
           <a data-scroll="faq">FAQ</a>
-          <a data-scroll="contact">Apply</a>
+          <Link href="/apply">Apply</Link>
         </nav>
         <div className="lp-mobile-foot">
           <span

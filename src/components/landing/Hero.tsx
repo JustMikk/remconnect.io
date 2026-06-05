@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { LANDING_FEATURE_AGENT, LANDING_TRUST_AVATARS } from '@/lib/landing-data'
 
 const AVATAR_IMG: React.CSSProperties = { width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit', display: 'block' }
@@ -43,14 +44,14 @@ export default function Hero() {
             or ETB, working from your own remote setup — no cold applications, no agency shuffle.
           </p>
           <div className="lp-hero-cta">
-            <button className="lp-btn lp-btn-blue">
+            <Link className="lp-btn lp-btn-blue" href="/apply">
               Apply for free
               <span className="pip">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
                   <path d="M5 12h14M13 5l7 7-7 7" />
                 </svg>
               </span>
-            </button>
+            </Link>
             <a className="lp-textlink on-dark" data-scroll="video">
               Watch how it works
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
