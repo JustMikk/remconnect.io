@@ -30,6 +30,13 @@ export interface ProfileLanguage {
   level: string
 }
 
+export interface ProfileRemoteSetup {
+  connectivity: string[]
+  hardware: string[]
+  powerBackup: string[]
+  internetSpeed?: string
+}
+
 export interface AgentProfile {
   agentId: string
   name: string
@@ -45,4 +52,14 @@ export interface AgentProfile {
   certsOther: ProfileCert[]
   skillAxes: SkillAxis[]
   languages: ProfileLanguage[]
+  // Fields populated from live API
+  nickname?: string
+  bio?: string
+  avatarUrl?: string
+  introVideoUrl?: string
+  cvUrl?: string
+  phone?: string
+  linkedinUrl?: string
+  employmentType?: string
+  remoteSetup?: ProfileRemoteSetup
 }

@@ -14,7 +14,9 @@ export default function PersonalStep() {
         <h2>
           Let&apos;s start with the <em>basics</em>.
         </h2>
-        <p>Your legal details, used for age verification and your contract once you&apos;re placed.</p>
+        <p>
+          Your legal details, used for age verification and your contract once you&apos;re placed.
+        </p>
       </div>
       <div className="ob-step-inner">
         <div className="ob-grid-3">
@@ -22,6 +24,12 @@ export default function PersonalStep() {
           <TextField fieldKey="pMiddle" label="Middle name" optional />
           <TextField fieldKey="pLast" label="Last name" placeholder="e.g. Demeke" required />
         </div>
+        <TextField
+          fieldKey="pNickname"
+          label="Nickname"
+          placeholder='e.g. "The Closer" or a friendly alias clients call you'
+          optional
+        />
         <div className="ob-grid-2">
           <TextField fieldKey="pDob" label="Date of birth" type="date" required />
           <SelectField fieldKey="pGender" label="Gender" required>
@@ -44,7 +52,12 @@ export default function PersonalStep() {
         </div>
         <div className="ob-grid-2">
           <TextField fieldKey="pCity" label="City" placeholder="e.g. Addis Ababa" required />
-          <TextField fieldKey="pAddr" label="Home address" placeholder="Subcity, Woreda, Street / House No." required />
+          <TextField
+            fieldKey="pAddr"
+            label="Home address"
+            placeholder="Subcity, Woreda, Street / House No."
+            required
+          />
         </div>
       </div>
     </div>

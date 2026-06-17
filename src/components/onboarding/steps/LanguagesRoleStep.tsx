@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useOnboarding } from '../OnboardingContext'
-import { EXP_OPTIONS, PROFICIENCIES, ROLE_GROUPS } from '../constants'
+import { PROFICIENCIES } from '../constants'
 import { CheckIcon, CloseIcon, PlusIcon, SearchIcon } from '../icons'
 
 function Subhead({ children, opt }: { children: React.ReactNode; opt?: boolean }) {
@@ -16,11 +16,8 @@ function Subhead({ children, opt }: { children: React.ReactNode; opt?: boolean }
 }
 
 export default function LanguagesRoleStep() {
-  const {
-    langs, addLang, updateLang, removeLang,
-    roles, toggleRole, setRoleExp,
-    hasError,
-  } = useOnboarding()
+  const { langs, addLang, updateLang, removeLang, roles, toggleRole, roleGroups, hasError } =
+    useOnboarding()
 
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -36,10 +33,12 @@ export default function LanguagesRoleStep() {
 
   const q = query.toLowerCase().trim()
   const selected = new Set(roles.map((r) => r.r))
-  const groups = ROLE_GROUPS.map((grp) => ({
-    g: grp.g,
-    matches: grp.r.filter((r) => r.toLowerCase().includes(q) || grp.g.toLowerCase().includes(q)),
-  })).filter((grp) => grp.matches.length > 0)
+  const groups = roleGroups
+    .map((grp) => ({
+      g: grp.g,
+      matches: grp.r.filter((r) => r.toLowerCase().includes(q) || grp.g.toLowerCase().includes(q)),
+    }))
+    .filter((grp) => grp.matches.length > 0)
 
   const rolesBad = hasError('roles')
 
@@ -53,7 +52,9 @@ export default function LanguagesRoleStep() {
         <h2>
           What you <em>speak</em> &amp; do.
         </h2>
-        <p>Tell us your languages and the roles you&apos;re after — search and pick as many as fit.</p>
+        <p>
+          Tell us your languages and the roles you&apos;re after — search and pick as many as fit.
+        </p>
       </div>
       <div className="ob-step-inner">
         <Subhead>Languages</Subhead>
@@ -75,7 +76,12 @@ export default function LanguagesRoleStep() {
                   <option key={p}>{p}</option>
                 ))}
               </select>
-              <button type="button" className="ob-rm" aria-label="Remove" onClick={() => removeLang(i)}>
+              <button
+                type="button"
+                className="ob-rm"
+                aria-label="Remove"
+                onClick={() => removeLang(i)}
+              >
                 <CloseIcon />
               </button>
             </div>
@@ -86,7 +92,7 @@ export default function LanguagesRoleStep() {
           Add language
         </button>
 
-        <Subhead>Role &amp; experience</Subhead>
+        <Subhead>Roles</Subhead>
         <div className="ob-field">
           <label className="ob-label">
             Roles you&apos;re applying for <span className="ob-req">Required · min 1</span>
@@ -144,22 +150,12 @@ export default function LanguagesRoleStep() {
               {roles.map((it) => (
                 <div className="ob-rolepick" key={it.r}>
                   <span className="nm">{it.r}</span>
-                  <span className="xp">
-                    <span className="xp-l">Experience</span>
-                    <select
-                      className={`ob-select${hasError(`roleExp:${it.r}`) ? ' bad' : ''}`}
-                      value={it.exp}
-                      onChange={(e) => setRoleExp(it.r, e.target.value)}
-                    >
-                      <option value="" disabled>
-                        Years of experience…
-                      </option>
-                      {EXP_OPTIONS.map((o) => (
-                        <option key={o}>{o}</option>
-                      ))}
-                    </select>
-                  </span>
-                  <button type="button" className="ob-rm" aria-label="Remove" onClick={() => toggleRole(it.r)}>
+                  <button
+                    type="button"
+                    className="ob-rm"
+                    aria-label="Remove"
+                    onClick={() => toggleRole(it.r)}
+                  >
                     <CloseIcon size={15} />
                   </button>
                 </div>
@@ -167,12 +163,10 @@ export default function LanguagesRoleStep() {
             </div>
           )}
 
-          {roles.length === 0 ? (
+          {roles.length === 0 && (
             <p className={`ob-chips-empty${rolesBad ? ' bad' : ''}`}>
               No roles selected yet — search above to add at least one.
             </p>
-          ) : (
-            <p className="ob-hint">Set your years of experience for each role above.</p>
           )}
         </div>
       </div>

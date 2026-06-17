@@ -14,15 +14,28 @@ interface AvatarProps {
   name?: string
   tone?: number
   size?: number
+  src?: string
 }
 
-export function Avatar({ name = 'A', tone = 0, size = 32 }: AvatarProps) {
+export function Avatar({ name = 'A', tone = 0, size = 32, src }: AvatarProps) {
   const initials = name
     .split(' ')
     .map((n) => n[0])
     .slice(0, 2)
     .join('')
     .toUpperCase()
+
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={name}
+        className="shrink-0 rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    )
+  }
 
   return (
     <div

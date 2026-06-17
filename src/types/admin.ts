@@ -55,6 +55,38 @@ export interface SampleAgent {
   photo?: string
 }
 
+/**
+ * Row shape for the admin agent directory, backed by the live API.
+ * Identity fields (id, name, email, status, joined, photo) are real; the
+ * remaining fields fall back to deterministic fixture enrichment until the
+ * backend exposes them (see src/lib/data/agent-enrichment.ts).
+ */
+export type DirectoryStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING'
+
+export interface DirectoryAgent {
+  id: string
+  name: string
+  email: string
+  status: DirectoryStatus
+  /** ISO date the account was created. */
+  joined: string
+  photo?: string
+  role: string
+  client: string
+  score: number
+  certs: number
+  langs: string[]
+  skills: string[]
+  rate: number
+}
+
+export interface DirectoryMeta {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
 export interface AgentIntake {
   experience?: string
   availability?: string

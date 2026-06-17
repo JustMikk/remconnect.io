@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './onboarding.css'
 import Onboarding from '@/components/onboarding/Onboarding'
 import type { Screen } from '@/components/onboarding/constants'
+import { getRoleCategories } from '@/lib/data/roles'
 
 export const metadata: Metadata = {
   title: 'RemConnect — Apply & create your agent profile',
@@ -24,5 +25,10 @@ export default async function ApplyPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const sp = await searchParams
-  return <Onboarding initialScreen={resolveScreen(sp.screen)} />
+
+  // Role catalog comes from the backend; on failure (e.g. cold start) the
+  // wizard falls back to its hardcoded role groups so /apply never breaks.
+  const roleCategories = await getRoleCategories().catch(() => undefined)
+
+  return <Onboarding initialScreen={resolveScreen(sp.screen)} roleCategories={roleCategories} />
 }

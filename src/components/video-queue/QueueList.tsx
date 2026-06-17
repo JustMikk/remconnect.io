@@ -1,21 +1,22 @@
 'use client'
 
 import { AnimatePresence, motion } from 'motion/react'
-import { LEADS, STATS } from './data'
 import type { Filter } from './data'
+import type { PortalQueueLead } from '@/lib/data/leads'
 import { StatCard } from './StatCard'
 import { LeadCard } from './LeadCard'
 
 const FILTERS: Filter[] = ['all', 'urgent', 'new']
 
 interface QueueListProps {
+  leads: PortalQueueLead[]
   filter: Filter
   setFilter: (f: Filter) => void
   onOpen: (id: string) => void
 }
 
-export function QueueList({ filter, setFilter, onOpen }: QueueListProps) {
-  const visible = LEADS.filter((l) => filter === 'all' || l.urgency === filter)
+export function QueueList({ leads, filter, setFilter, onOpen }: QueueListProps) {
+  const visible = leads.filter((l) => filter === 'all' || l.urgency === filter)
 
   return (
     <div>
@@ -31,15 +32,23 @@ export function QueueList({ filter, setFilter, onOpen }: QueueListProps) {
           </p>
         </div>
         <span className="shrink-0 whitespace-nowrap pb-0.5 text-[13px] text-rc-muted">
-          {LEADS.length} qualified leads
+          {leads.length} qualified leads
         </span>
       </header>
 
       {/* Stats */}
       <div className="my-6 grid grid-cols-3 gap-3">
-        {STATS.map((s, i) => (
-          <StatCard key={s.label} value={s.value} label={s.label} index={i} />
-        ))}
+        <StatCard
+          value={String(leads.filter((l) => l.urgency === 'urgent').length)}
+          label="Urgent"
+          index={0}
+        />
+        <StatCard
+          value={String(leads.filter((l) => l.urgency === 'new').length)}
+          label="New"
+          index={1}
+        />
+        <StatCard value={String(leads.length)} label="Total in queue" index={2} />
       </div>
 
       {/* List label + filter pills */}

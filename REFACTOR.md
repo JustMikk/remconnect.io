@@ -11,6 +11,16 @@ exemplars are done — the rest proceeds file-by-file, ideally one domain folder
 - **UI primitives** (`src/components/ui/`): `Button`, `Card`, `Avatar`, `Chip` migrated to Tailwind class maps.
 - **Server-first + data layer exemplar**: `app/(portal)/profile` → async Server Component reading `lib/data/profile.ts`, interactivity isolated to `ResumeImporter`/`ProfileTabs` leaves.
 - **Decomposition exemplar**: `AgentAdminProfile` (857 lines) → thin container + `components/admin/agent-detail/*` (7 tabs + header + shared parts), data via `lib/data/agents.ts`, fully Tailwind.
+- **Backend integration (phase 1)**: typed API client (`lib/api/*`), JWT cookie auth (admin login + `proxy.ts` guard/refresh), agent registration wired to `POST /auth/register`, admin agents directory/detail backed by `GET /agents`. See "Fixture-enrichment seam" below.
+
+## Fixture-enrichment seam (temporary, delete when backend catches up)
+
+The admin agent views are **hybrid**: identity/contact/media/languages/skills/certifications come
+from the live API; operational data the backend doesn't expose yet (client assignment, scores,
+pay/bill rates, work history, notes, performance, network metrics) is filled from demo fixtures,
+picked deterministically by hashing the agent uuid. Everything fake funnels through
+`src/lib/data/agent-enrichment.ts` — when the backend exposes these fields, delete that file and
+map the API response directly in `src/lib/data/agents.ts`.
 
 ## Backlog (incremental)
 

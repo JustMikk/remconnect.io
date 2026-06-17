@@ -28,7 +28,9 @@ export default function SetupStep() {
         <h2>
           Certifications &amp; <em>remote setup</em>.
         </h2>
-        <p>Add any certifications you&apos;ve earned, then tell us about your work-from-home setup.</p>
+        <p>
+          Add any certifications you&apos;ve earned, then tell us about your work-from-home setup.
+        </p>
       </div>
       <div className="ob-step-inner">
         <Subhead opt>Certifications</Subhead>
@@ -43,7 +45,12 @@ export default function SetupStep() {
               <div className="ob-cert" key={c.id}>
                 <div className="ob-cert-top">
                   <span className="n">Certification {i + 1}</span>
-                  <button type="button" className="ob-cert-rm" aria-label="Remove" onClick={() => removeCert(c.id)}>
+                  <button
+                    type="button"
+                    className="ob-cert-rm"
+                    aria-label="Remove"
+                    onClick={() => removeCert(c.id)}
+                  >
                     <TrashIcon size={16} />
                   </button>
                 </div>

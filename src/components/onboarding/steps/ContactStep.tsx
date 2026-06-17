@@ -20,7 +20,8 @@ export default function ContactStep() {
           How do we <em>reach you</em>?
         </h2>
         <p>
-          We&apos;ll use these for everything from your verification email to placement offers. Keep them current.
+          We&apos;ll use these for everything from your verification email to placement offers. Keep
+          them current.
         </p>
       </div>
       <div className="ob-step-inner">

@@ -18,7 +18,13 @@ export default function LandingNav() {
             <div className="lp-navitem">
               <button>
                 Roles
-                <svg className="caret" width="11" height="11" viewBox="0 0 16 16" fill="currentColor">
+                <svg
+                  className="caret"
+                  width="11"
+                  height="11"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                >
                   <path d="M8 11 3 6h10z" />
                 </svg>
               </button>
@@ -58,7 +64,11 @@ export default function LandingNav() {
                 </div>
                 <div className="lp-mega-cards">
                   <a className="lp-mega-card group" data-scroll="stories">
-                    <img className="lp-img" src="/assets/team-hero.png" alt="RemConnect cohort in training" />
+                    <img
+                      className="lp-img"
+                      src="/assets/team-hero.png"
+                      alt="RemConnect cohort in training"
+                    />
                     <div className="ov" />
                     <div className="lb">
                       <div className="k">Cohort 14</div>
@@ -66,7 +76,11 @@ export default function LandingNav() {
                     </div>
                   </a>
                   <a className="lp-mega-card group" data-scroll="why">
-                    <img className="lp-img" src="/agents/maereg-hailu.jpg" alt="RemConnect agent Maereg Hailu" />
+                    <img
+                      className="lp-img"
+                      src="/agents/maereg-hailu.jpg"
+                      alt="RemConnect agent Maereg Hailu"
+                    />
                     <div className="ov" />
                     <div className="lb">
                       <div className="k">Your profile</div>
@@ -88,22 +102,35 @@ export default function LandingNav() {
           </div>
 
           <div className="lp-nav-right">
-            <a className="lp-nav-employer" href="#employers">
-              For employers
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                <path d="M7 17 17 7M9 7h8v8" />
-              </svg>
-            </a>
+            <Link className="lp-nav-employer" href="/login">
+              Log in
+            </Link>
             <Link className="lp-nav-apply" href="/apply">
               Apply
               <span className="pip">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                >
                   <path d="M5 12h14M13 5l7 7-7 7" />
                 </svg>
               </span>
             </Link>
             <button className="lp-burger" id="lpBurger" aria-label="Menu">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
                 <path d="M3 6h18M3 12h18M3 18h18" />
               </svg>
             </button>
@@ -118,11 +145,24 @@ export default function LandingNav() {
             <img
               src="/assets/remconnect-logo.png"
               alt="RemConnect"
-              style={{ height: 42, width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }}
+              style={{
+                height: 42,
+                width: 'auto',
+                display: 'block',
+                filter: 'brightness(0) invert(1)',
+              }}
             />
           </span>
           <button className="lp-mobile-close" id="lpMobileClose" aria-label="Close">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
           </button>
@@ -133,6 +173,7 @@ export default function LandingNav() {
           <a data-scroll="stories">Stories</a>
           <a data-scroll="faq">FAQ</a>
           <Link href="/apply">Apply</Link>
+          <Link href="/login">Log in</Link>
         </nav>
         <div className="lp-mobile-foot">
           <span

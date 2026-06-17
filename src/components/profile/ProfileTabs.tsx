@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Icon } from '@/components/ui/Icon'
 import { cn } from '@/lib/cn'
 import type { AgentProfile } from '@/types/profile'
+import { SectionCard } from '@/components/ui/SectionCard'
 import { ResumeImporter } from './ResumeImporter'
 import { ExperienceList } from './ExperienceList'
 import { ProfileSidebar } from './ProfileSidebar'
@@ -52,8 +53,51 @@ export function ProfileTabs({ profile }: ProfileTabsProps) {
       {tab === 'Overview' ? (
         <div className="grid grid-cols-[1fr_320px] gap-6">
           <div className="flex flex-col gap-5">
+            {/* Intro video */}
+            {profile.introVideoUrl && (
+              <SectionCard title="Intro video">
+                <video
+                  src={profile.introVideoUrl}
+                  controls
+                  className="w-full rounded-md"
+                  style={{ maxHeight: 320 }}
+                />
+              </SectionCard>
+            )}
+
+            {/* Resume */}
+            {profile.cvUrl && (
+              <SectionCard title="Resume">
+                <a
+                  href={profile.cvUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-md border border-rc-line bg-rc-paper-2 px-4 py-2.5 text-[13px] font-medium text-rc-ink transition-colors hover:bg-rc-line"
+                >
+                  <Icon name="download" size={14} />
+                  Download resume
+                </a>
+              </SectionCard>
+            )}
+
+            {/* Skills */}
+            {profile.skills.length > 0 && (
+              <SectionCard title="Skills">
+                <div className="flex flex-wrap gap-1.5">
+                  {profile.skills.map((s) => (
+                    <span
+                      key={s}
+                      className="rounded-full border border-rc-line bg-rc-paper-2 px-2.5 py-1 text-[12px] text-rc-ink"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </SectionCard>
+            )}
+
             <ResumeImporter />
-            <ExperienceList experience={profile.experience} />
+            {profile.experience.length > 0 && <ExperienceList experience={profile.experience} />}
           </div>
           <ProfileSidebar profile={profile} />
         </div>

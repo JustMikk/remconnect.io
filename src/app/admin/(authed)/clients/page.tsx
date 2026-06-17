@@ -1,12 +1,5 @@
-import { AdminTopbar } from '@/components/admin/AdminTopbar'
+import { redirect } from 'next/navigation'
 
 export default function ClientsPage() {
-  return (
-    <>
-      <AdminTopbar crumb="People" title="Clients" />
-      <div style={{ padding: '60px 32px', textAlign: 'center', color: '#5a6072', fontSize: 14 }}>
-        Client management — coming soon.
-      </div>
-    </>
-  )
+  redirect('/admin/leads')
 }

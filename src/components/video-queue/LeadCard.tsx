@@ -4,20 +4,22 @@ import { motion } from 'motion/react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Icon } from '@/components/ui/Icon'
 import { UrgencyBadge } from './UrgencyBadge'
-import type { Lead } from './data'
+import type { PortalQueueLead } from '@/lib/data/leads'
 
 function Dot() {
   return <span className="mx-1.5 text-rc-muted-d/70">·</span>
 }
 
 interface LeadCardProps {
-  lead: Lead
+  lead: PortalQueueLead
   index: number
   onOpen: () => void
 }
 
 export function LeadCard({ lead, index, onOpen }: LeadCardProps) {
   const urgent = lead.urgency === 'urgent'
+  const servicesSummary =
+    lead.services.length > 0 ? lead.services.slice(0, 2).join(', ') : 'Various services'
 
   return (
     <motion.button
@@ -39,11 +41,7 @@ export function LeadCard({ lead, index, onOpen }: LeadCardProps) {
           {lead.name} <span className="font-normal text-rc-muted-d">· {lead.company}</span>
         </div>
         <div className="truncate text-[12.5px] text-rc-muted">
-          {lead.industry}
-          <Dot />
-          {lead.teamSize} team
-          <Dot />
-          {lead.budget}
+          {servicesSummary}
           <Dot />
           {lead.submitted}
         </div>

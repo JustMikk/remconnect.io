@@ -6,9 +6,8 @@ export default function AppBar() {
   return (
     <header className="ob-appbar">
       <Link className="ob-brand" href="/">
-        <span className="ob-brand-mark">R</span>
-        <b>RemConnect</b>
-        <span className="dot">.</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/assets/remconnect-logo.png" alt="RemConnect" className="ob-logo" />
       </Link>
       <div className="ob-appbar-right">
         <span className="ob-cohort-pill">

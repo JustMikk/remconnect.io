@@ -4,8 +4,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Icon } from '@/components/ui/Icon'
-import { ScriptBlockCard } from './ScriptBlockCard'
-import type { Lead } from './data'
+import type { PortalQueueLead } from '@/lib/data/leads'
 
 interface Attachment {
   name: string
@@ -13,7 +12,7 @@ interface Attachment {
   length: string
 }
 
-export function LeadBrief({ lead, onBack }: { lead: Lead; onBack: () => void }) {
+export function LeadBrief({ lead, onBack }: { lead: PortalQueueLead; onBack: () => void }) {
   const [attached, setAttached] = useState<Attachment | null>(null)
   const [dragOver, setDragOver] = useState(false)
   const [sent, setSent] = useState(false)
@@ -32,10 +31,10 @@ export function LeadBrief({ lead, onBack }: { lead: Lead; onBack: () => void }) 
   }
 
   const snapshot: [string, string][] = [
-    ['Industry', lead.industry],
-    ['Team size', lead.teamSize],
-    ['Budget', lead.budget],
-    ['Timeline', lead.timeline],
+    ['Company', lead.company],
+    ['Contact', lead.email],
+    ['Services', lead.services.slice(0, 2).join(', ') || '—'],
+    ['Submitted', lead.submitted],
   ]
 
   return (
@@ -59,9 +58,7 @@ export function LeadBrief({ lead, onBack }: { lead: Lead; onBack: () => void }) 
           <h2 className="font-serif text-2xl font-normal leading-tight tracking-[-0.01em] text-rc-ink">
             {lead.name}
           </h2>
-          <div className="mt-0.5 text-[12.5px] text-rc-muted">
-            {lead.role} · {lead.company}
-          </div>
+          <div className="mt-0.5 text-[12.5px] text-rc-muted">{lead.company}</div>
         </div>
 
         <div className="flex-1" />
@@ -77,7 +74,7 @@ export function LeadBrief({ lead, onBack }: { lead: Lead; onBack: () => void }) 
         {snapshot.map(([k, v], i) => (
           <div key={k} className={`flex-1 px-3.5 py-3 ${i > 0 ? 'border-l border-rc-line' : ''}`}>
             <div className="text-[10px] uppercase tracking-[0.06em] text-rc-muted-d">{k}</div>
-            <div className="mt-1 text-[13px] font-medium text-rc-ink">{v}</div>
+            <div className="mt-1 truncate text-[13px] font-medium text-rc-ink">{v}</div>
           </div>
         ))}
       </div>
@@ -85,17 +82,25 @@ export function LeadBrief({ lead, onBack }: { lead: Lead; onBack: () => void }) 
       <Divider className="mt-6" />
 
       {/* AI-generated script */}
-      <Section title="AI-generated script" hint="personalised fields highlighted">
-        <div className="flex flex-col gap-2">
-          {lead.script.map((block, i) => (
-            <ScriptBlockCard key={i} block={block} index={i} />
-          ))}
-        </div>
-        <p className="mt-3 flex items-center gap-1.5 text-[11.5px] text-rc-muted">
-          <Icon name="info" size={13} />
-          Hover a block and tap the edit icon to customise it before recording.
-        </p>
-      </Section>
+      {lead.aiCallScript && (
+        <Section title="AI-generated script" hint="personalised to this lead">
+          <pre className="whitespace-pre-wrap rounded-md border border-rc-line bg-white px-4 py-4 font-sans text-[13px] leading-relaxed text-rc-ink">
+            {lead.aiCallScript}
+          </pre>
+          <p className="mt-3 flex items-center gap-1.5 text-[11.5px] text-rc-muted">
+            <Icon name="info" size={13} />
+            Use this as a guide when recording your personalised video.
+          </p>
+        </Section>
+      )}
+
+      {lead.notes && (
+        <Section title="Additional notes">
+          <p className="rounded-md border border-rc-line bg-white px-4 py-3 text-[13px] leading-relaxed text-rc-ink">
+            {lead.notes}
+          </p>
+        </Section>
+      )}
 
       <Divider />
 

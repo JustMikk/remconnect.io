@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RemConnect — frontend
 
-## Getting Started
+Next.js 16 app for RemConnect: agent onboarding, agent portal, and the admin console.
+Engineering standards live in [AGENTS.md](AGENTS.md); the migration backlog in [REFACTOR.md](REFACTOR.md).
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local   # backend API configuration
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Backend integration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The deployed backend lives at `https://rem-connectio.onrender.com/api/v1`
+(Swagger UI at [/api-docs](https://rem-connectio.onrender.com/api-docs/)).
 
-## Learn More
+- `API_BASE_URL` — server-side base URL; used by the data-access layer (`src/lib/data/*`),
+  server actions, and `src/proxy.ts`.
+- `NEXT_PUBLIC_API_BASE_URL` — same URL, used by the registration wizard to upload the
+  multipart application (avatar + intro video) straight from the browser (backend CORS is open),
+  which avoids serverless request-body limits.
 
-To learn more about Next.js, take a look at the following resources:
+**Cold starts:** the backend is on Render's free tier and can take ~50 seconds to wake after
+idle. The API client uses generous timeouts and user-facing "server waking up" messaging; the
+first request after a quiet period may still feel slow.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### What's wired to the live API (phase 1)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Agent registration** (`/apply`): create account → email OTP (`/auth/otp/*`) → 7-step wizard
+  (incl. photo + intro-video upload) → `POST /auth/register` → httpOnly session cookies.
+  Role catalog comes from `GET /roles/categories/with-roles` (hardcoded fallback if unreachable).
+- **Admin auth** (`/admin/login`): `POST /auth/login`, staff roles only (`RECRUITER`/`OPS`/`ADMIN`).
+  `/admin/*` is guarded in `src/proxy.ts` (redirect + silent refresh-token rotation) and by
+  `requireStaff()` in the admin layout.
+- **Admin agents** (`/admin/agents`): directory + detail backed by `GET /agents` /
+  `GET /agents/{id}`. Fields the backend doesn't expose yet are filled from demo fixtures via
+  the temporary seam in `src/lib/data/agent-enrichment.ts` (see REFACTOR.md).
 
-## Deploy on Vercel
+### Testing the admin console
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Staff accounts are created via `POST /auth/register/staff` (currently unauthenticated on the
+backend). A dev test admin exists: `claude.testadmin@remconnect.io` / `RcTestAdmin2026!`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Quality gates
+
+Run before committing (enforced by the Husky pre-commit hook):
+
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+npm test
+npm run build
+```

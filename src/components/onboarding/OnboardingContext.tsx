@@ -13,51 +13,45 @@ import {
 import {
   EMAIL_RE,
   URL_RE,
+  ROLE_GROUPS,
   TOTAL_STEPS,
   type Cert,
+  type FormFields,
   type Lang,
+  type OnboardingFiles,
   type RolePick,
   type Screen,
 } from './constants'
+import { buildRegisterFormData } from '@/lib/registration/buildRegisterFormData'
+import { establishSessionAction } from '@/app/apply/actions'
+import type { ApiRoleCategory, TokenPair } from '@/types/api'
 
 const STORE_KEY = 'rc_onboarding_v1'
 
-interface FormFields {
-  // create account
-  crEmail: string
-  crPass: string
-  crPass2: string
-  crRole: string
-  // login
-  lgEmail: string
-  lgPass: string
-  // personal
-  pFirst: string
-  pMiddle: string
-  pLast: string
-  pDob: string
-  pGender: string
-  pCity: string
-  pAddr: string
-  // contact
-  cEmail: string
-  cPhone: string
-  // setup
-  netSpeed: string
-  // availability
-  aSalary: string
-  aHear: string
-  aLinkedin: string
+const EMPTY_FIELDS: FormFields = {
+  crEmail: '',
+  crPass: '',
+  crPass2: '',
+  crRole: '',
+  lgEmail: '',
+  lgPass: '',
+  pFirst: '',
+  pMiddle: '',
+  pLast: '',
+  pNickname: '',
+  pDob: '',
+  pGender: '',
+  pCity: '',
+  pAddr: '',
+  cEmail: '',
+  cPhone: '',
+  netSpeed: '',
+  aSalary: '',
+  aHear: '',
+  aLinkedin: '',
 }
 
-const EMPTY_FIELDS: FormFields = {
-  crEmail: '', crPass: '', crPass2: '', crRole: '',
-  lgEmail: '', lgPass: '',
-  pFirst: '', pMiddle: '', pLast: '', pDob: '', pGender: '', pCity: '', pAddr: '',
-  cEmail: '', cPhone: '',
-  netSpeed: '',
-  aSalary: '', aHear: '', aLinkedin: '',
-}
+const EMPTY_FILES: OnboardingFiles = { avatar: null, introVideo: null, resume: null }
 
 interface PersistShape {
   screen: Screen
@@ -71,6 +65,18 @@ interface PersistShape {
   parsed: boolean
   resumeName: string
   resumeSize: string
+}
+
+export interface SubmitError {
+  code: 'EMAIL_TAKEN' | 'VALIDATION' | 'UNREACHABLE' | 'UNKNOWN'
+  message: string
+}
+
+/** Shape of `data` in the live register/login responses (tokens come back flat). */
+interface RegisterResponseData {
+  accessToken?: string
+  refreshToken?: string
+  tokens?: TokenPair
 }
 
 interface OnboardingValue {
@@ -97,6 +103,8 @@ interface OnboardingValue {
   roles: RolePick[]
   toggleRole: (r: string) => void
   setRoleExp: (r: string, exp: string) => void
+  /** Role catalog (backend-driven, hardcoded fallback when unreachable). */
+  roleGroups: { g: string; r: string[] }[]
   // certifications
   certs: Cert[]
   addCert: () => void
@@ -108,17 +116,23 @@ interface OnboardingValue {
   // employment type
   emp: string
   setEmp: (val: string) => void
+  // files (avatar / intro video / resume — never persisted)
+  files: OnboardingFiles
+  setFile: (kind: keyof OnboardingFiles, file: File | null) => void
   // resume
   parsed: boolean
   parsing: boolean
   resumeName: string
   resumeSize: string
-  startResume: (name: string, size: string) => void
+  startResume: (file: File) => void
   resetResume: () => void
   // validation
   validateCreate: () => boolean
   validateLogin: () => boolean
   validateStep: (n: number) => boolean
+  // submission
+  submitting: boolean
+  submitError: SubmitError | null
   // verify/resend
   signupEmail: string
 }
@@ -146,9 +160,11 @@ function focusField(key: string) {
 
 export function OnboardingProvider({
   initialScreen,
+  roleCategories,
   children,
 }: {
   initialScreen?: Screen
+  roleCategories?: ApiRoleCategory[]
   children: ReactNode
 }) {
   const [screen, setScreen] = useState<Screen>(initialScreen ?? 'create')
@@ -162,16 +178,39 @@ export function OnboardingProvider({
   const [certs, setCerts] = useState<Cert[]>([])
   const [checks, setChecks] = useState<Set<string>>(new Set())
   const [emp, setEmpState] = useState('')
+  const [files, setFiles] = useState<OnboardingFiles>(EMPTY_FILES)
   const [parsed, setParsed] = useState(false)
   const [parsing, setParsing] = useState(false)
   const [resumeName, setResumeName] = useState('')
   const [resumeSize, setResumeSize] = useState('')
   const [errors, setErrors] = useState<Set<string>>(new Set())
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<SubmitError | null>(null)
   const [hydrated, setHydrated] = useState(false)
   const certSeq = useRef(0)
   const parseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // ---- backend role catalog (fallback to the hardcoded groups) ----
+  const roleGroups = useMemo(() => {
+    if (roleCategories && roleCategories.length > 0) {
+      const groups = roleCategories
+        .filter((c) => c.roles.length > 0)
+        .map((c) => ({ g: c.name, r: c.roles.map((r) => r.title) }))
+      if (groups.length > 0) return groups
+    }
+    return ROLE_GROUPS
+  }, [roleCategories])
+
+  const roleIds = useMemo(() => {
+    const map = new Map<string, string>()
+    roleCategories?.forEach((c) => c.roles.forEach((r) => map.set(r.title, r.id)))
+    return map
+  }, [roleCategories])
+
   // ---- hydrate from localStorage on mount ----
+  /* eslint-disable react-hooks/set-state-in-effect --
+     Restoring persisted form state requires a mount effect: localStorage is
+     unavailable during SSR, so these setState calls cannot move to render. */
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORE_KEY)
@@ -189,7 +228,7 @@ export function OnboardingProvider({
         if (typeof s.parsed === 'boolean') setParsed(s.parsed)
         if (typeof s.resumeName === 'string') setResumeName(s.resumeName)
         if (typeof s.resumeSize === 'string') setResumeSize(s.resumeSize)
-        if (typeof s.step === 'number') setStep(s.step)
+        if (typeof s.step === 'number') setStep(Math.min(s.step, TOTAL_STEPS))
         // Only restore a deep screen if the caller didn't force one and the
         // saved screen is the resumable wizard (never trap the user on success).
         if (!initialScreen && s.screen === 'wizard') setScreen('wizard')
@@ -200,12 +239,22 @@ export function OnboardingProvider({
     setHydrated(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // ---- persist (debounced) whenever meaningful state changes ----
   useEffect(() => {
     if (!hydrated) return
+    // A submitted application must not linger (or be restored) — drop the store.
+    if (screen === 'success') {
+      try {
+        localStorage.removeItem(STORE_KEY)
+      } catch {
+        /* ignore */
+      }
+      return
+    }
     const payload: PersistShape = {
-      screen: screen === 'success' ? 'create' : screen,
+      screen,
       step,
       fields,
       roles,
@@ -225,7 +274,20 @@ export function OnboardingProvider({
       }
     }, 250)
     return () => clearTimeout(t)
-  }, [hydrated, screen, step, fields, roles, langs, certs, checks, emp, parsed, resumeName, resumeSize])
+  }, [
+    hydrated,
+    screen,
+    step,
+    fields,
+    roles,
+    langs,
+    certs,
+    checks,
+    emp,
+    parsed,
+    resumeName,
+    resumeSize,
+  ])
 
   // ---- navigation ----
   const goScreen = useCallback((s: Screen) => {
@@ -253,7 +315,7 @@ export function OnboardingProvider({
       setFields((prev) => ({ ...prev, [key]: value }))
       clearError(key)
     },
-    [clearError]
+    [clearError],
   )
 
   const hasError = useCallback((key: string) => errors.has(key), [errors])
@@ -263,9 +325,12 @@ export function OnboardingProvider({
   const updateLang = useCallback(
     (i: number, patch: Partial<Lang>) =>
       setLangs((p) => p.map((row, idx) => (idx === i ? { ...row, ...patch } : row))),
-    []
+    [],
   )
-  const removeLang = useCallback((i: number) => setLangs((p) => p.filter((_, idx) => idx !== i)), [])
+  const removeLang = useCallback(
+    (i: number) => setLangs((p) => p.filter((_, idx) => idx !== i)),
+    [],
+  )
 
   // ---- roles ----
   const toggleRole = useCallback(
@@ -277,14 +342,14 @@ export function OnboardingProvider({
       })
       clearError('roles')
     },
-    [clearError]
+    [clearError],
   )
   const setRoleExp = useCallback(
     (r: string, exp: string) => {
       setRoles((p) => p.map((x) => (x.r === r ? { ...x, exp } : x)))
       clearError(`roleExp:${r}`)
     },
-    [clearError]
+    [clearError],
   )
 
   // ---- certifications ----
@@ -296,7 +361,7 @@ export function OnboardingProvider({
   const updateCert = useCallback(
     (id: number, patch: Partial<Cert>) =>
       setCerts((p) => p.map((c) => (c.id === id ? { ...c, ...patch } : c))),
-    []
+    [],
   )
   const removeCert = useCallback((id: number) => setCerts((p) => p.filter((c) => c.id !== id)), [])
 
@@ -316,7 +381,16 @@ export function OnboardingProvider({
       setEmpState(val)
       clearError('emp')
     },
-    [clearError]
+    [clearError],
+  )
+
+  // ---- files ----
+  const setFile = useCallback(
+    (kind: keyof OnboardingFiles, file: File | null) => {
+      setFiles((prev) => ({ ...prev, [kind]: file }))
+      clearError(kind)
+    },
+    [clearError],
   )
 
   // ---- resume ----
@@ -326,26 +400,29 @@ export function OnboardingProvider({
     setParsing(false)
     setResumeName('')
     setResumeSize('')
+    setFiles((prev) => ({ ...prev, resume: null }))
     clearError('resume')
   }, [clearError])
 
   const startResume = useCallback(
-    (name: string, size: string) => {
+    (file: File) => {
       if (parseTimer.current) clearTimeout(parseTimer.current)
-      setResumeName(name)
-      setResumeSize(size)
+      setFiles((prev) => ({ ...prev, resume: file }))
+      setResumeName(file.name)
+      setResumeSize(`${(file.size / 1048576).toFixed(1)} MB`)
       setParsed(false)
-      setParsing(true)
+      setParsing(false)
       clearError('resume')
-      parseTimer.current = setTimeout(() => {
-        setParsing(false)
-        setParsed(true)
-      }, 1900)
     },
-    [clearError]
+    [clearError],
   )
 
-  useEffect(() => () => { if (parseTimer.current) clearTimeout(parseTimer.current) }, [])
+  useEffect(
+    () => () => {
+      if (parseTimer.current) clearTimeout(parseTimer.current)
+    },
+    [],
+  )
 
   // ---- validation ----
   const applyErrors = useCallback((keys: string[], first?: string) => {
@@ -378,16 +455,16 @@ export function OnboardingProvider({
         ;(['pFirst', 'pLast', 'pDob', 'pGender', 'pCity', 'pAddr'] as (keyof FormFields)[]).forEach(
           (k) => {
             if (!fields[k].trim()) bad.push(k)
-          }
+          },
         )
       } else if (n === 2) {
         if (!EMAIL_RE.test(fields.cEmail.trim())) bad.push('cEmail')
         if (!/^\d{9}$/.test(fields.cPhone.replace(/\s/g, ''))) bad.push('cPhone')
       } else if (n === 3) {
         if (roles.length === 0) bad.push('roles')
-        else roles.forEach((it) => { if (!it.exp) bad.push(`roleExp:${it.r}`) })
       } else if (n === 4) {
-        if (!parsed) bad.push('resume')
+        if (!files.avatar) bad.push('avatar')
+        if (!files.introVideo) bad.push('introVideo')
       } else if (n === 5) {
         if (!fields.netSpeed) bad.push('netSpeed')
       } else if (n === 6) {
@@ -398,18 +475,122 @@ export function OnboardingProvider({
       applyErrors(bad, bad[0])
       return bad.length === 0
     },
-    [fields, roles, parsed, emp, applyErrors]
+    [fields, roles, files, emp, applyErrors],
   )
+
+  // ---- submission ----
+  // The multipart payload (avatar + intro video) goes straight from the
+  // browser to the backend — CORS is open there, and routing it through a
+  // Next.js endpoint would hit serverless body-size limits. The returned
+  // tokens are then stored as httpOnly cookies via a server action.
+  const submit = useCallback(async () => {
+    if (submitting) return
+    setSubmitting(true)
+    setSubmitError(null)
+    try {
+      const base = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '')
+      if (!base) {
+        setSubmitError({ code: 'UNKNOWN', message: 'NEXT_PUBLIC_API_BASE_URL is not configured.' })
+        return
+      }
+
+      const body = buildRegisterFormData({
+        fields,
+        roles,
+        langs,
+        certs,
+        checks: Array.from(checks),
+        emp,
+        files,
+        roleIds,
+      })
+
+      let res: Response
+      try {
+        res = await fetch(`${base}/auth/register`, { method: 'POST', body })
+      } catch {
+        setSubmitError({
+          code: 'UNREACHABLE',
+          message:
+            'Could not reach the server — it may be waking up from idle. Please try again in a minute; your answers are saved.',
+        })
+        return
+      }
+
+      let envelope: {
+        success?: boolean
+        message?: string
+        errors?: Record<string, string[]>
+        data?: RegisterResponseData
+      } = {}
+      try {
+        envelope = (await res.json()) as typeof envelope
+      } catch {
+        /* non-JSON response — handled below */
+      }
+
+      if (!res.ok || !envelope.success) {
+        if (res.status === 409) {
+          setSubmitError({
+            code: 'EMAIL_TAKEN',
+            message: envelope.message ?? 'This email already has an account.',
+          })
+        } else if (res.status === 422) {
+          const detail = envelope.errors
+            ? Object.entries(envelope.errors)
+                .map(([field, msgs]) => `${field}: ${msgs.join(', ')}`)
+                .join(' · ')
+            : ''
+          setSubmitError({
+            code: 'VALIDATION',
+            message: detail || envelope.message || 'Some answers were rejected — please review.',
+          })
+        } else {
+          setSubmitError({
+            code: 'UNKNOWN',
+            message:
+              envelope.message ?? `Submission failed (HTTP ${res.status}). Please try again.`,
+          })
+        }
+        return
+      }
+
+      // Live API returns tokens flat ({accessToken, refreshToken}); tolerate
+      // the documented nested {tokens} shape too.
+      const data = envelope.data
+      const tokens =
+        data?.tokens ??
+        (data?.accessToken && data?.refreshToken
+          ? { accessToken: data.accessToken, refreshToken: data.refreshToken }
+          : null)
+      if (tokens) {
+        try {
+          await establishSessionAction(tokens)
+        } catch {
+          /* session is best-effort — the application itself succeeded */
+        }
+      }
+
+      try {
+        localStorage.removeItem(STORE_KEY)
+      } catch {
+        /* ignore */
+      }
+      goScreen('success')
+      setStep(1)
+    } finally {
+      setSubmitting(false)
+    }
+  }, [submitting, fields, roles, langs, certs, checks, emp, files, roleIds, goScreen])
 
   const next = useCallback(() => {
     if (!validateStep(step)) return
     if (step === TOTAL_STEPS) {
-      goScreen('success')
-      setStep(1)
+      void submit()
       return
     }
     goStep(step + 1)
-  }, [step, validateStep, goScreen, goStep])
+  }, [step, validateStep, submit, goStep])
 
   const back = useCallback(() => {
     if (step > 1) goStep(step - 1)
@@ -419,31 +600,91 @@ export function OnboardingProvider({
 
   const value = useMemo<OnboardingValue>(
     () => ({
-      screen, step, goScreen, goStep, next, back,
-      fields, setField,
-      errors, hasError, clearError,
-      langs, addLang, updateLang, removeLang,
-      roles, toggleRole, setRoleExp,
-      certs, addCert, updateCert, removeCert,
-      checks, toggleCheck,
-      emp, setEmp,
-      parsed, parsing, resumeName, resumeSize, startResume, resetResume,
-      validateCreate, validateLogin, validateStep,
+      screen,
+      step,
+      goScreen,
+      goStep,
+      next,
+      back,
+      fields,
+      setField,
+      errors,
+      hasError,
+      clearError,
+      langs,
+      addLang,
+      updateLang,
+      removeLang,
+      roles,
+      toggleRole,
+      setRoleExp,
+      roleGroups,
+      certs,
+      addCert,
+      updateCert,
+      removeCert,
+      checks,
+      toggleCheck,
+      emp,
+      setEmp,
+      files,
+      setFile,
+      parsed,
+      parsing,
+      resumeName,
+      resumeSize,
+      startResume,
+      resetResume,
+      validateCreate,
+      validateLogin,
+      validateStep,
+      submitting,
+      submitError,
       signupEmail,
     }),
     [
-      screen, step, goScreen, goStep, next, back,
-      fields, setField,
-      errors, hasError, clearError,
-      langs, addLang, updateLang, removeLang,
-      roles, toggleRole, setRoleExp,
-      certs, addCert, updateCert, removeCert,
-      checks, toggleCheck,
-      emp, setEmp,
-      parsed, parsing, resumeName, resumeSize, startResume, resetResume,
-      validateCreate, validateLogin, validateStep,
+      screen,
+      step,
+      goScreen,
+      goStep,
+      next,
+      back,
+      fields,
+      setField,
+      errors,
+      hasError,
+      clearError,
+      langs,
+      addLang,
+      updateLang,
+      removeLang,
+      roles,
+      toggleRole,
+      setRoleExp,
+      roleGroups,
+      certs,
+      addCert,
+      updateCert,
+      removeCert,
+      checks,
+      toggleCheck,
+      emp,
+      setEmp,
+      files,
+      setFile,
+      parsed,
+      parsing,
+      resumeName,
+      resumeSize,
+      startResume,
+      resetResume,
+      validateCreate,
+      validateLogin,
+      validateStep,
+      submitting,
+      submitError,
       signupEmail,
-    ]
+    ],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

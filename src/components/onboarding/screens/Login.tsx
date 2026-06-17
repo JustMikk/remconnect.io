@@ -30,7 +30,9 @@ export default function Login() {
       <h1 className="ob-title">
         Welcome <em>back</em>.
       </h1>
-      <p className="ob-lede">Sign in to finish an application, check your status, or jump into your agent portal.</p>
+      <p className="ob-lede">
+        Sign in to finish an application, check your status, or jump into your agent portal.
+      </p>
 
       <form className="ob-form" onSubmit={onSubmit} noValidate>
         <TextField
@@ -43,7 +45,10 @@ export default function Login() {
           validate={(v) => EMAIL_RE.test(v.trim())}
           error="Enter a valid email address."
         />
-        <div className={`ob-field${hasError('lgPass') ? ' has-error' : ''}`} style={{ marginBottom: 0 }}>
+        <div
+          className={`ob-field${hasError('lgPass') ? ' has-error' : ''}`}
+          style={{ marginBottom: 0 }}
+        >
           <PasswordField
             fieldKey="lgPass"
             label="Password"
@@ -51,7 +56,12 @@ export default function Login() {
             autoComplete="current-password"
           />
           <div style={{ textAlign: 'right', marginTop: 9 }}>
-            <button type="button" className="ob-textlink" onClick={onForgot} style={{ color: 'var(--rc-muted)' }}>
+            <button
+              type="button"
+              className="ob-textlink"
+              onClick={onForgot}
+              style={{ color: 'var(--rc-muted)' }}
+            >
               Forgot password?
             </button>
           </div>
@@ -59,14 +69,18 @@ export default function Login() {
 
         <button className="ob-btn ob-btn-primary full" type="submit" style={{ marginTop: 8 }}>
           Sign in
-          <span className="pip"><ArrowRight /></span>
+          <span className="pip">
+            <ArrowRight />
+          </span>
         </button>
       </form>
 
       {forgotSent && (
         <div className="ob-note good" style={{ display: 'flex' }}>
           <CheckIcon size={15} strokeWidth={2.2} />
-          <span>If that email is registered, a reset link is on its way. It expires in 1 hour.</span>
+          <span>
+            If that email is registered, a reset link is on its way. It expires in 1 hour.
+          </span>
         </div>
       )}
 

@@ -2,21 +2,29 @@
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { LEADS } from './data'
 import type { Filter } from './data'
+import type { PortalQueueLead } from '@/lib/data/leads'
 import { QueueList } from './QueueList'
 import { LeadBrief } from './LeadBrief'
 
-/**
- * Personalised video delivery — agent video queue.
- * Two screens on a single route: the qualified-lead queue and the
- * per-lead brief + recording flow, swapped with a directional transition.
- */
-export function VideoQueue() {
+interface VideoQueueProps {
+  leads: PortalQueueLead[]
+  error?: string
+}
+
+export function VideoQueue({ leads, error }: VideoQueueProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [filter, setFilter] = useState<Filter>('all')
 
-  const selected = LEADS.find((l) => l.id === selectedId) ?? null
+  const selected = leads.find((l) => l.id === selectedId) ?? null
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-[1000px] px-8 pb-14 pt-7 font-sans text-rc-ink">
+        <p className="mt-12 text-center text-[13px] text-rc-muted">{error}</p>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-[1000px] px-8 pb-14 pt-7 font-sans text-rc-ink">
@@ -39,7 +47,7 @@ export function VideoQueue() {
             exit={{ opacity: 0, x: -16 }}
             transition={{ duration: 0.24, ease: 'easeOut' }}
           >
-            <QueueList filter={filter} setFilter={setFilter} onOpen={setSelectedId} />
+            <QueueList leads={leads} filter={filter} setFilter={setFilter} onOpen={setSelectedId} />
           </motion.div>
         )}
       </AnimatePresence>

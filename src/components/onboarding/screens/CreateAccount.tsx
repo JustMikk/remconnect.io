@@ -1,25 +1,36 @@
 'use client'
 
+import { useState } from 'react'
 import { useOnboarding } from '../OnboardingContext'
-import { EMAIL_RE, SIGNUP_ROLE_GROUPS } from '../constants'
+import { EMAIL_RE } from '../constants'
+import { requestOtpAction } from '@/app/apply/actions'
 import { TextField, PasswordField, SelectField } from '../fields'
 import { ArrowRight, CheckIcon } from '../icons'
 
 const STRENGTH_LABELS = ['—', 'Weak', 'Fair', 'Good', 'Strong']
 
 export default function CreateAccount() {
-  const { fields, validateCreate, goScreen } = useOnboarding()
+  const { fields, validateCreate, goScreen, roleGroups } = useOnboarding()
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState<string | null>(null)
 
   const pw = fields.crPass
   const hasLen = pw.length >= 8
   const hasNum = /\d/.test(pw)
   const hasUp = /[A-Z]/.test(pw)
   const hasSym = /[^A-Za-z0-9]/.test(pw)
-  const score = pw.length === 0 ? 0 : (hasLen ? 1 : 0) + (hasNum ? 1 : 0) + (hasUp ? 1 : 0) + (hasSym ? 1 : 0)
+  const score =
+    pw.length === 0 ? 0 : (hasLen ? 1 : 0) + (hasNum ? 1 : 0) + (hasUp ? 1 : 0) + (hasSym ? 1 : 0)
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (validateCreate()) goScreen('verify')
+    if (!validateCreate() || sending) return
+    setSending(true)
+    setSendError(null)
+    const result = await requestOtpAction(fields.crEmail.trim())
+    setSending(false)
+    if (result.ok) goScreen('verify')
+    else setSendError(result.error ?? 'Could not send the verification code.')
   }
 
   return (
@@ -32,7 +43,8 @@ export default function CreateAccount() {
         Create your <em>account</em>.
       </h1>
       <p className="ob-lede">
-        This becomes your login and primary contact through the whole pipeline. It only takes a moment.
+        This becomes your login and primary contact through the whole pipeline. It only takes a
+        moment.
       </p>
 
       <form className="ob-form" onSubmit={onSubmit} noValidate>
@@ -53,18 +65,30 @@ export default function CreateAccount() {
           placeholder="Create a password"
           autoComplete="new-password"
         />
-        <div className={`ob-strength${score ? ` s${score}` : ''}`} style={{ marginTop: -8, marginBottom: 'var(--fgap)' }}>
+        <div
+          className={`ob-strength${score ? ` s${score}` : ''}`}
+          style={{ marginTop: -8, marginBottom: 'var(--fgap)' }}
+        >
           <div className="ob-strength-bars">
-            <i /><i /><i /><i />
+            <i />
+            <i />
+            <i />
+            <i />
           </div>
           <span className="lbl">{STRENGTH_LABELS[score]}</span>
         </div>
         <ul className="ob-reqlist" style={{ marginTop: -6, marginBottom: 'var(--fgap)' }}>
           <li className={hasLen ? 'met' : ''}>
-            <span className="rc"><CheckIcon size={9} strokeWidth={3.2} /></span>8+ characters
+            <span className="rc">
+              <CheckIcon size={9} strokeWidth={3.2} />
+            </span>
+            8+ characters
           </li>
           <li className={hasNum ? 'met' : ''}>
-            <span className="rc"><CheckIcon size={9} strokeWidth={3.2} /></span>At least one number
+            <span className="rc">
+              <CheckIcon size={9} strokeWidth={3.2} />
+            </span>
+            At least one number
           </li>
         </ul>
 
@@ -76,8 +100,14 @@ export default function CreateAccount() {
           error="Passwords don't match."
         />
 
-        <SelectField fieldKey="crRole" label="Role you're applying for" required placeholder="Select a role…" hint="You can refine or add more roles later in your profile.">
-          {SIGNUP_ROLE_GROUPS.map((grp) => (
+        <SelectField
+          fieldKey="crRole"
+          label="Role you're applying for"
+          required
+          placeholder="Select a role…"
+          hint="You can refine or add more roles later in your profile."
+        >
+          {roleGroups.map((grp) => (
             <optgroup key={grp.g} label={grp.g}>
               {grp.r.map((r) => (
                 <option key={r}>{r}</option>
@@ -86,14 +116,30 @@ export default function CreateAccount() {
           ))}
         </SelectField>
 
-        <button className="ob-btn ob-btn-primary full" type="submit" style={{ marginTop: 8 }}>
-          Create account
-          <span className="pip"><ArrowRight /></span>
+        {sendError && (
+          <div
+            className="ob-callout"
+            style={{ borderColor: 'var(--rc-bad)', color: 'var(--rc-bad)' }}
+          >
+            <p>{sendError}</p>
+          </div>
+        )}
+
+        <button
+          className="ob-btn ob-btn-primary full"
+          type="submit"
+          disabled={sending}
+          style={{ marginTop: 8 }}
+        >
+          {sending ? 'Sending code…' : 'Create account'}
+          <span className="pip">
+            <ArrowRight />
+          </span>
         </button>
 
         <p className="ob-fine">
-          By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>. We never
-          sell your data or charge you a fee.
+          By creating an account you agree to our <a href="#">Terms</a> and{' '}
+          <a href="#">Privacy Policy</a>. We never sell your data or charge you a fee.
         </p>
       </form>
 

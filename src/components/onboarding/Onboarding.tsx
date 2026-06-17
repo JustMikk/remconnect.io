@@ -2,6 +2,7 @@
 
 import { OnboardingProvider, useOnboarding } from './OnboardingContext'
 import type { Screen } from './constants'
+import type { ApiRoleCategory } from '@/types/api'
 import AppBar from './parts/AppBar'
 import Stepper from './parts/Stepper'
 import CreateAccount from './screens/CreateAccount'
@@ -45,9 +46,15 @@ function Shell() {
   )
 }
 
-export default function Onboarding({ initialScreen }: { initialScreen?: Screen }) {
+export default function Onboarding({
+  initialScreen,
+  roleCategories,
+}: {
+  initialScreen?: Screen
+  roleCategories?: ApiRoleCategory[]
+}) {
   return (
-    <OnboardingProvider initialScreen={initialScreen}>
+    <OnboardingProvider initialScreen={initialScreen} roleCategories={roleCategories}>
       <Shell />
     </OnboardingProvider>
   )

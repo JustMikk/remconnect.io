@@ -1,24 +1,105 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import {
+  ACCESS_COOKIE,
+  REFRESH_COOKIE,
+  REFRESH_MAX_AGE_SECONDS,
+  sessionCookieOptions,
+} from '@/lib/api/constants'
+import { decodeAccessToken, isExpired } from '@/lib/api/jwt'
+import type { ApiEnvelope, TokenPair } from '@/types/api'
 
 /**
- * Domain-based routing.
+ * Request interception (Next.js 16's rename of `middleware`):
  *
- * remconnect.io / www.remconnect.io  → silently rewritten to /coming-soon
- *                                      (URL stays as-is, no redirect)
- * everything else (e.g. *.vercel.app, localhost) → passes through untouched
+ * 1. Domain-based routing — remconnect.io / www.remconnect.io are silently
+ *    rewritten to /coming-soon (URL stays as-is, no redirect).
  *
- * Note: In Next.js 16 the `middleware` file convention was deprecated and
- * renamed to `proxy` (see node_modules/next/dist/docs/.../version-16.md →
- * "`middleware` to `proxy`"). This file is the current, non-deprecated
- * equivalent of the requested `middleware.ts`. Because this project uses a
- * `src/` directory, it lives at `src/proxy.ts` so it sits alongside `app`.
+ * 2. /admin session guard — redirects to /admin/login; silently refreshes
+ *    expired tokens before the render when a refresh cookie exists.
+ *
+ * 3. Portal guard — all non-public, non-admin routes redirect to /login with
+ *    the same silent refresh behaviour.
  */
 
 const COMING_SOON_HOSTS = new Set(['remconnect.io', 'www.remconnect.io'])
 
+/** Paths that never require authentication. */
+const PUBLIC_PATHS = new Set(['/', '/apply', '/login', '/coming-soon'])
+const PUBLIC_PREFIXES = ['/apply/']
+
+/** Refresh must fail fast — cold-starting backend degrades to a login redirect. */
+const REFRESH_TIMEOUT_MS = 8_000
+
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_PATHS.has(pathname)) return true
+  return PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))
+}
+
+function redirectTo(request: NextRequest, pathname: string, error?: string): NextResponse {
+  const url = request.nextUrl.clone()
+  url.pathname = pathname
+  url.search = error ? `?error=${error}` : ''
+  const response = NextResponse.redirect(url)
+  response.cookies.delete(ACCESS_COOKIE)
+  response.cookies.delete(REFRESH_COOKIE)
+  return response
+}
+
+async function refreshSession(
+  request: NextRequest,
+  refreshToken: string,
+  onFail: (error?: string) => NextResponse,
+): Promise<NextResponse> {
+  const base = process.env.API_BASE_URL?.replace(/\/$/, '')
+  if (!base) return onFail()
+
+  let tokens: TokenPair
+  try {
+    const res = await fetch(`${base}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(REFRESH_TIMEOUT_MS),
+    })
+    const envelope = (await res.json()) as ApiEnvelope<TokenPair>
+    if (!res.ok || !envelope.success || !envelope.data) return onFail('expired')
+    tokens = envelope.data
+  } catch {
+    return onFail('expired')
+  }
+
+  const payload = decodeAccessToken(tokens.accessToken)
+  const accessMaxAge = payload
+    ? Math.max(60, payload.exp - Math.floor(Date.now() / 1000) - 30)
+    : 60 * 60
+
+  request.cookies.set(ACCESS_COOKIE, tokens.accessToken)
+  const response = NextResponse.next({ request })
+  response.cookies.set(ACCESS_COOKIE, tokens.accessToken, sessionCookieOptions(accessMaxAge))
+  response.cookies.set(
+    REFRESH_COOKIE,
+    tokens.refreshToken,
+    sessionCookieOptions(REFRESH_MAX_AGE_SECONDS),
+  )
+  return response
+}
+
+function handleAuth(request: NextRequest, loginPath: string): Promise<NextResponse> | NextResponse {
+  const accessToken = request.cookies.get(ACCESS_COOKIE)?.value
+  if (accessToken) {
+    const payload = decodeAccessToken(accessToken)
+    if (payload && !isExpired(payload)) return NextResponse.next()
+  }
+
+  const refreshToken = request.cookies.get(REFRESH_COOKIE)?.value
+  if (!refreshToken) return redirectTo(request, loginPath)
+
+  return refreshSession(request, refreshToken, (err) => redirectTo(request, loginPath, err))
+}
+
 export function proxy(request: NextRequest) {
-  // Host header can include a port (e.g. "remconnect.io:443"); strip it.
   const host = (request.headers.get('host') ?? '').split(':')[0].toLowerCase()
 
   if (COMING_SOON_HOSTS.has(host)) {
@@ -27,11 +108,19 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
+  const { pathname } = request.nextUrl
+
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+    return handleAuth(request, '/admin/login')
+  }
+
+  if (!isPublicPath(pathname)) {
+    return handleAuth(request, '/login')
+  }
+
   return NextResponse.next()
 }
 
 export const config = {
-  // Run on every path except static assets, image optimization, favicon and
-  // API routes — so assets still load correctly on the public domain too.
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }
