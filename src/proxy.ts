@@ -12,17 +12,12 @@ import type { ApiEnvelope, TokenPair } from '@/types/api'
 /**
  * Request interception (Next.js 16's rename of `middleware`):
  *
- * 1. Domain-based routing — remconnect.io / www.remconnect.io are silently
- *    rewritten to /coming-soon (URL stays as-is, no redirect).
- *
- * 2. /admin session guard — redirects to /admin/login; silently refreshes
+ * 1. /admin session guard — redirects to /admin/login; silently refreshes
  *    expired tokens before the render when a refresh cookie exists.
  *
- * 3. Portal guard — all non-public, non-admin routes redirect to /login with
+ * 2. Portal guard — all non-public, non-admin routes redirect to /login with
  *    the same silent refresh behaviour.
  */
-
-const COMING_SOON_HOSTS = new Set(['remconnect.io', 'www.remconnect.io'])
 
 /** Paths that never require authentication. */
 const PUBLIC_PATHS = new Set(['/', '/apply', '/login', '/coming-soon'])
@@ -100,14 +95,6 @@ function handleAuth(request: NextRequest, loginPath: string): Promise<NextRespon
 }
 
 export function proxy(request: NextRequest) {
-  const host = (request.headers.get('host') ?? '').split(':')[0].toLowerCase()
-
-  if (COMING_SOON_HOSTS.has(host)) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/coming-soon'
-    return NextResponse.rewrite(url)
-  }
-
   const { pathname } = request.nextUrl
 
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {

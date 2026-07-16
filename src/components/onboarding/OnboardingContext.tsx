@@ -569,6 +569,24 @@ export function OnboardingProvider({
         } catch {
           /* session is best-effort — the application itself succeeded */
         }
+
+        // `/auth/register` ignores the resume, so upload it separately now that
+        // we have a token — the backend stores AND parses it, populating the
+        // agent's cvUrl + parsed profile fields. Best-effort: the applicant can
+        // re-upload from their profile if this fails (e.g. backend cold start).
+        if (files.resume) {
+          try {
+            const resumeForm = new FormData()
+            resumeForm.append('resume', files.resume)
+            await fetch(`${base}/resume/upload`, {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${tokens.accessToken}` },
+              body: resumeForm,
+            })
+          } catch {
+            /* best-effort — resume can be re-uploaded from the profile later */
+          }
+        }
       }
 
       try {

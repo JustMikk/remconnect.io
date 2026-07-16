@@ -239,7 +239,7 @@ export function ResumeImporter() {
     try {
       const body = new FormData()
       body.append('resume', file)
-      const res = await fetch('/api/resume/parse', { method: 'POST', body })
+      const res = await fetch('/api/resume/upload', { method: 'POST', body })
       const json = (await res.json()) as unknown
       clearInterval(tick)
 

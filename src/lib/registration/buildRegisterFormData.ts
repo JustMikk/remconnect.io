@@ -105,10 +105,12 @@ export function buildRegisterFormData(input: RegistrationInput): FormData {
   if (Object.keys(remoteSetup).length > 0) form.set('remoteSetup', JSON.stringify(remoteSetup))
 
   // files — avatar and introVideo are required by the backend; the wizard
-  // validates their presence before submit. Resume is optional.
+  // validates their presence before submit. The resume is intentionally NOT
+  // sent here: `/auth/register` ignores it ("you can upload a resume later"),
+  // so it is uploaded separately to `/resume/upload` after the session is
+  // established (see OnboardingContext.submit), which stores AND parses it.
   if (files.avatar) form.set('avatar', files.avatar)
   if (files.introVideo) form.set('introVideo', files.introVideo)
-  if (files.resume) form.set('resume', files.resume)
 
   return form
 }
