@@ -78,8 +78,8 @@ export default function LandingNav() {
                   <a className="lp-mega-card group" data-scroll="why">
                     <img
                       className="lp-img"
-                      src="/agents/maereg-hailu.jpg"
-                      alt="RemConnect agent Maereg Hailu"
+                      src="/agents/tensae-wubeshet.jpg"
+                      alt="RemConnect agent Tensae Wubeshet"
                     />
                     <div className="ov" />
                     <div className="lb">

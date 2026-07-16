@@ -24,20 +24,44 @@ export default function FinalCTA() {
                 <Link className="lp-btn lp-btn-blue" href="/apply">
                   Apply for free
                   <span className="pip">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                    >
                       <path d="M5 12h14M13 5l7 7-7 7" />
                     </svg>
                   </span>
                 </Link>
                 <Link className="lp-textlink on-dark" href="/apply?screen=login">
                   Already an agent? Sign in
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                  >
                     <path d="M5 12h14M13 5l7 7-7 7" />
                   </svg>
                 </Link>
               </div>
               <div className="lp-stack-note">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 7v5l3 2" />
                 </svg>
@@ -47,8 +71,8 @@ export default function FinalCTA() {
             <div className="lp-stack-media group">
               <img
                 className="lp-img"
-                src="/agents/noud-zewgemichael.jpg"
-                alt="RemConnect agent Noud Zewgemichael"
+                src="/agents/kalkidan.png"
+                alt="RemConnect agent Kalkidan Yilkal"
                 style={{ objectPosition: 'center 20%' }}
               />
             </div>
